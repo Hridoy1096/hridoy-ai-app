@@ -1,4 +1,4 @@
-// 🔑 Token ব্যবহার করা হলো
+// 🔑 তোমার HuggingFace Token
 const API_TOKEN = "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";
 
 // 🔹 Hridoy system prompt
@@ -41,10 +41,10 @@ You are Hridoy.
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
 
-// 🔹 Load memory from localStorage or empty
+// 🔹 Load memory from localStorage
 let chatMemory = JSON.parse(localStorage.getItem("hridoyMemory")) || [];
 
-// 🔹 Display message
+// 🔹 Show message
 function addMessage(text, cls) {
   const div = document.createElement("div");
   div.className = `message ${cls}`;
@@ -59,7 +59,6 @@ async function sendMessage() {
   if (!userText) return;
 
   addMessage("তুমি: " + userText, "user");
-
   chatMemory.push(`USER: ${userText}`);
   input.value = "";
 
@@ -87,28 +86,28 @@ HRIDOY:
     );
 
     const data = await response.json();
-    console.log("API response:", data); // Mobile console debug
+    console.log("API response:", data); // মোবাইলে console debug
 
     let reply = "…";
 
-    // 🔹 Response fix (different model formats)
+    // 🔹 Response fix (different formats)
     if (data?.generated_text) {
       reply = data.generated_text;
     } else if (Array.isArray(data) && data[0]?.generated_text) {
       reply = data[0].generated_text.split("HRIDOY:").pop().trim();
     } else {
-      reply = "আমি ঠিক বলতে পারছি না…";
+      reply = "…";
     }
 
     addMessage(reply, "hridoy");
 
-    // 🔹 Update memory + save
+    // 🔹 Update memory & save
     chatMemory.push(`HRIDOY: ${reply}`);
-    if (chatMemory.length > 40) chatMemory = chatMemory.slice(-40);
+    if (chatMemory.length > 40) chatMemory = chatMemory.slice(-40); 
     localStorage.setItem("hridoyMemory", JSON.stringify(chatMemory));
 
   } catch (err) {
     console.error(err);
-    addMessage("আমি ঠিকভাবে প্রতিক্রিয়া দিতে পারছি না…", "hridoy");
+    addMessage("…", "hridoy"); // কোনো error হলে fallback
   }
 }
