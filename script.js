@@ -1,4 +1,4 @@
-// 🔑 তোমার HuggingFace Token
+// 🔑 তোমার নতুন HuggingFace Token
 const API_TOKEN = "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";
 
 // 🔹 Hridoy system prompt
@@ -53,7 +53,15 @@ function addMessage(text, cls) {
   chat.scrollTop = chat.scrollHeight;
 }
 
-// 🔹 Send message
+// 🔹 Speak function (Text-to-Speech)
+function speak(text){
+    const msg = new SpeechSynthesisUtterance();
+    msg.lang = 'bn-BD';
+    msg.text = text;
+    window.speechSynthesis.speak(msg);
+}
+
+// 🔹 Send message function
 async function sendMessage() {
   const userText = input.value.trim();
   if (!userText) return;
@@ -86,11 +94,11 @@ HRIDOY:
     );
 
     const data = await response.json();
-    console.log("API response:", data); // মোবাইলে console debug
+    console.log("API response:", data);
 
     let reply = "…";
 
-    // 🔹 Response fix (different formats)
+    // 🔹 Response fix
     if (data?.generated_text) {
       reply = data.generated_text;
     } else if (Array.isArray(data) && data[0]?.generated_text) {
@@ -100,14 +108,40 @@ HRIDOY:
     }
 
     addMessage(reply, "hridoy");
+    speak(reply); // voice output
 
-    // 🔹 Update memory & save
+    // 🔹 Update memory
     chatMemory.push(`HRIDOY: ${reply}`);
     if (chatMemory.length > 40) chatMemory = chatMemory.slice(-40); 
     localStorage.setItem("hridoyMemory", JSON.stringify(chatMemory));
 
   } catch (err) {
     console.error(err);
-    addMessage("…", "hridoy"); // কোনো error হলে fallback
+    addMessage("…", "hridoy");
   }
+}
+
+// 🔹 Voice input (Microphone)
+function startVoice() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+        alert("আপনার browser ভয়েস input সমর্থন করছে না।");
+        return;
+    }
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'bn-BD';
+    recognition.continuous = false;
+
+    recognition.onresult = function(event){
+        const speechText = event.results[0][0].transcript;
+        input.value = speechText;
+        sendMessage();
+    };
+
+    recognition.onerror = function(err){
+        console.error(err);
+        alert("ভয়েস input পাওয়া যায়নি। আবার চেষ্টা করো।");
+    };
+
+    recognition.start();
 }
