@@ -1,5 +1,5 @@
 const API_TOKEN = "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";
-
+// 🔹 Hridoy system prompt
 const SYSTEM_PROMPT = `
 You are Hridoy.
 You speak mostly Bengali, the way people speak when they are thinking aloud—not explaining.
@@ -35,9 +35,14 @@ but to stay with the question a little longer.
 You are Hridoy.
 `;
 
+// 🔹 DOM elements
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
 
+// 🔹 Load memory from localStorage or empty
+let chatMemory = JSON.parse(localStorage.getItem("hridoyMemory")) || [];
+
+// 🔹 Helper function: display message
 function addMessage(text, cls) {
   const div = document.createElement("div");
   div.className = `message ${cls}`;
@@ -46,42 +51,62 @@ function addMessage(text, cls) {
   chat.scrollTop = chat.scrollHeight;
 }
 
+// 🔹 Send message function
 async function sendMessage() {
   const userText = input.value.trim();
   if (!userText) return;
 
   addMessage("তুমি: " + userText, "user");
+
+  // update memory
+  chatMemory.push(`USER: ${userText}`);
   input.value = "";
 
-  const response = await fetch(
-    "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct",
-    {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${API_TOKEN}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        inputs: `
+  try {
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          inputs: `
 SYSTEM:
 ${SYSTEM_PROMPT}
 
-USER:
-${userText}
+CONTEXT:
+${chatMemory.join("\n")}
 
 HRIDOY:
 `
-      })
+        })
+      }
+    );
+
+    const data = await response.json();
+    console.log("API response:", data); // মোবাইল console debug
+
+    let reply = "…";
+
+    // reply fix: different response formats handle করা
+    if (data?.generated_text) {
+      reply = data.generated_text;
+    } else if (Array.isArray(data) && data[0]?.generated_text) {
+      reply = data[0].generated_text.split("HRIDOY:").pop().trim();
     }
-  );
 
-  const data = await response.json();
+    addMessage(reply, "hridoy");
 
-  let reply = "…";
+    // update memory & save to localStorage
+    chatMemory.push(`HRIDOY: ${reply}`);
+    // শুধু শেষ 20 মেসেজ রাখবো (optional)
+    if (chatMemory.length > 40) chatMemory = chatMemory.slice(-40);
+    localStorage.setItem("hridoyMemory", JSON.stringify(chatMemory));
 
-  if (Array.isArray(data) && data[0]?.generated_text) {
-    reply = data[0].generated_text.split("HRIDOY:").pop().trim();
+  } catch (err) {
+    console.error(err);
+    addMessage("কিছু সমস্যা হয়েছে, আবার চেষ্টা করো…", "hridoy");
   }
-
-  addMessage(reply, "hridoy");
 }
