@@ -1,5 +1,5 @@
 // 🔑 তোমার HuggingFace Token
-const API_TOKEN = "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";
+const API_TOKEN = "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";
 
 // 🔹 Hridoy system prompt
 const SYSTEM_PROMPT = `
