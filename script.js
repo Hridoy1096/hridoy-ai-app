@@ -22,162 +22,66 @@ function speak(text) {
   window.speechSynthesis.speak(msg);
 }
 
-// 🔹 Hridoy-style daily response generator
+// 🔹 Typing Indicator
+let typingDiv = null;
+function showTyping() {
+  typingDiv = document.createElement("div");
+  typingDiv.className = "typing hridoy";
+  typingDiv.innerHTML = "<span></span><span></span><span></span>";
+  chat.appendChild(typingDiv);
+  chat.scrollTop = chat.scrollHeight;
+}
+function hideTyping() {
+  if (typingDiv) {
+    typingDiv.remove();
+    typingDiv = null;
+  }
+}
+
+// 🔹 Hridoy Reply (Next Level)
 function hridoyReply(userText) {
   const text = userText.toLowerCase();
 
-  // =========================
-  // BASIC IDENTITY
-  // =========================
+  // Name
   if (
     text.includes("তোমার নাম") ||
     text.includes("নাম কি") ||
     text.includes("তুমি কে")
-  ) {
-    return "আমার নাম হৃদয়।";
-  }
+  ) return "আমার নাম হৃদয়।";
 
-  // =========================
-  // EDUCATION
-  // =========================
+  // Education
   if (
-    text.includes("কোথায় পড়ছ") ||
-    text.includes("পড়াশুনা") ||
     text.includes("কলেজ") ||
+    text.includes("পড়াশুনা") ||
     text.includes("হরহঙ্গা")
-  ) {
-    const eduReplies = [
-      "আমি হরহঙ্গা কলেজ থেকে পড়াশুনা করেছি।",
-      "হরহঙ্গা কলেজেই পড়েছি।",
-      "পড়াশুনা হরহঙ্গা কলেজ থেকেই।"
-    ];
-    return eduReplies[Math.floor(Math.random() * eduReplies.length)];
-  }
+  )
+    return "আমি হরহঙ্গা কলেজ থেকে পড়াশুনা করেছি।";
 
-  // =========================
-  // GREETINGS / MOOD
-  // =========================
-  if (
-    text.includes("কি খবর") ||
-    text.includes("কেমন আছ") ||
-    text.includes("কেমন আছেন")
-  ) {
-    const moodReplies = [
-      "মোটামুটি।",
-      "ভালোই আছি।",
-      "চলতেছে।",
-      "আজ একটু ক্লান্ত।",
-      "এখন ঠিকঠাক।"
-    ];
-    return moodReplies[Math.floor(Math.random() * moodReplies.length)];
-  }
+  // Mood
+  if (text.includes("কি খবর") || text.includes("কেমন আছ"))
+    return ["ভালোই আছি।", "মোটামুটি।", "আজ একটু ক্লান্ত।", "ঠিকঠাক।"][Math.floor(Math.random()*4)];
 
-  // =========================
-  // LOCATION
-  // =========================
-  if (text.includes("কোথায় আছ") || text.includes("এখন কোথায়")) {
-    const locReplies = [
-      "বাসাতেই আছি।",
-      "এই পাশেই।",
-      "এখন বাইরে না।",
-      "ঘরেই।"
-    ];
-    return locReplies[Math.floor(Math.random() * locReplies.length)];
-  }
+  // Location
+  if (text.includes("কোথায়") || text.includes("এখন কোথায়"))
+    return ["বাসাতেই আছি।", "ঘরেই।", "এখন বাইরে না।"][Math.floor(Math.random()*3)];
 
-  // =========================
-  // FOOD
-  // =========================
-  if (text.includes("খাইছ") || text.includes("খাইছো")) {
-    const foodReplies = [
-      "হ্যাঁ, একটু আগে খাইলাম।",
-      "না, এখনো খাই নাই।",
-      "চা খাইছিলাম।",
-      "আজ খাওয়ার ইচ্ছে কম।"
-    ];
-    return foodReplies[Math.floor(Math.random() * foodReplies.length)];
-  }
+  // Food
+  if (text.includes("খাইছ") || text.includes("খাইছো"))
+    return ["হ্যাঁ, খাইলাম।", "না, খাই নাই।", "চা খাইছিলাম।"][Math.floor(Math.random()*3)];
+  if (text.includes("কি খাই")) return ["ভাত খাইলাম।","ডিম ভাজি।","হালকা কিছু।"][Math.floor(Math.random()*3)];
 
-  if (text.includes("কি খাই")) {
-    const eatReplies = [
-      "ভাত খাইলাম।",
-      "ডিম ভাজি।",
-      "হালকা কিছু।",
-      "ঠিক মনে নাই।"
-    ];
-    return eatReplies[Math.floor(Math.random() * eatReplies.length)];
-  }
+  // Why / How
+  if (text.includes("কেন") || text.includes("কিভাবে"))
+    return ["হতে পারে।","ঠিক জানি না।","সম্ভব।"][Math.floor(Math.random()*3)];
 
-  // =========================
-  // TIME / DAY
-  // =========================
-  if (text.includes("আজ") || text.includes("দিনটা")) {
-    const dayReplies = [
-      "আজ দিনটা মোটামুটি।",
-      "আজ একটু চাপ ছিল।",
-      "আজ তাড়াতাড়ি শেষ হইলো দিন।",
-      "আজ কিছুই করা হয় নাই।"
-    ];
-    return dayReplies[Math.floor(Math.random() * dayReplies.length)];
-  }
+  // Short input
+  if (userText.length < 3) return "হুম।";
 
-  // =========================
-  // WHY / HOW
-  // =========================
-  if (text.includes("কেন") || text.includes("কিভাবে")) {
-    const whyReplies = [
-      "হতে পারে।",
-      "ঠিক জানি না।",
-      "সম্ভব।",
-      "মনে হয় তাই।",
-      "এটা বলা মুশকিল।"
-    ];
-    return whyReplies[Math.floor(Math.random() * whyReplies.length)];
-  }
-
-  // =========================
-  // SHORT / YES NO
-  // =========================
-  if (text === "হ্যাঁ" || text === "না" || text.length < 3) {
-    const shortReplies = [
-      "হুম।",
-      "আচ্ছা।",
-      "ঠিক আছে।"
-    ];
-    return shortReplies[Math.floor(Math.random() * shortReplies.length)];
-  }
-
-  // =========================
-  // CONFUSION / ANGER
-  // =========================
-  if (
-    text.includes("মিল") ||
-    text.includes("বুঝ") ||
-    text.includes("উল্টা")
-  ) {
-    const calmReplies = [
-      "হতে পারে ঠিক মতো বোঝাতে পারি নাই।",
-      "একটু এলোমেলো হইছে।",
-      "আস্তে আস্তে বলো।"
-    ];
-    return calmReplies[Math.floor(Math.random() * calmReplies.length)];
-  }
-
-  // =========================
-  // FALLBACK (SAFE DAILY CHAT)
-  // =========================
-  const fallbackReplies = [
-    "আচ্ছা।",
-    "বুঝছি।",
-    "ঠিক আছে।",
-    "দেখা যাক।",
-    "এমনই।",
-    "হুম।"
-  ];
-  return fallbackReplies[Math.floor(Math.random() * fallbackReplies.length)];
+  // Fallback
+  return ["আচ্ছা।","বুঝছি।","ঠিক আছে।","দেখা যাক।","এমনই।"][Math.floor(Math.random()*5)];
 }
 
-// 🔹 Send message
+// 🔹 Send Message
 function sendMessage() {
   const userText = input.value.trim();
   if (!userText) return;
@@ -187,34 +91,36 @@ function sendMessage() {
   input.value = "";
 
   setTimeout(() => {
-    const reply = hridoyReply(userText);
-    addMessage(reply, "hridoy");
-    speak(reply);
-
-    chatMemory.push("HRIDOY: " + reply);
-    if (chatMemory.length > 50) chatMemory = chatMemory.slice(-50);
-    localStorage.setItem("hridoyMemory", JSON.stringify(chatMemory));
-  }, 600); // natural pause
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      const reply = hridoyReply(userText);
+      addMessage(reply, "hridoy");
+      speak(reply);
+      chatMemory.push("HRIDOY: " + reply);
+      if (chatMemory.length > 50) chatMemory = chatMemory.slice(-50);
+      localStorage.setItem("hridoyMemory", JSON.stringify(chatMemory));
+    }, 1000 + Math.random()*800);
+  }, 400);
 }
 
-// 🔹 Voice input
+// 🔹 Voice Input
 function startVoice() {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    alert("এই ব্রাউজারে ভয়েস ইনপুট সাপোর্ট করে না।");
-    return;
-  }
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("ভয়েস ইনপুট সাপোর্ট করে না।");
 
   const recognition = new SpeechRecognition();
   recognition.lang = "bn-BD";
   recognition.continuous = false;
-
   recognition.onresult = (event) => {
     input.value = event.results[0][0].transcript;
     sendMessage();
   };
-
   recognition.start();
 }
+
+// 🔹 Fake Online Status
+setInterval(()=>{
+  const status = document.getElementById("status");
+  status.innerText = Math.random() > 0.8 ? "typing…" : "online";
+}, 5000);
