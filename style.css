@@ -1,11 +1,18 @@
-/* ===== CHAT BACKGROUND PATTERN ===== */
-#chat {
-  background-color: #0f172a;
-  background-image: radial-gradient(
-    rgba(255, 255, 255, 0.04) 1px,
-    transparent 1px
-  );
-  background-size: 20px 20px;
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Ubuntu, sans-serif;
+}
+
+/* ===== BODY ===== */
+body {
+  background: #0f172a;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== HEADER ===== */
@@ -44,6 +51,105 @@
   font-size: 12px;
 }
 
+/* ===== CHAT CONTAINER ===== */
+#chat {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background-color: #0f172a;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.04) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* ===== MESSAGE COMMON ===== */
+.message {
+  max-width: 75%;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+  font-size: 15px;
+  word-wrap: break-word;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* ===== USER MESSAGE (RIGHT) ===== */
+.message.user {
+  margin-left: auto;
+  background: #22c55e;
+  color: #022c22;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== HRIDOY MESSAGE (LEFT) ===== */
+.message.hridoy {
+  margin-right: auto;
+  background: #1e293b;
+  color: #e5e7eb;
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== INPUT BAR ===== */
+.input-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: #020617;
+  border-top: 1px solid #1e293b;
+}
+
+/* ===== INPUT ===== */
+#userInput {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  background: #1e293b;
+  color: #e5e7eb;
+  font-size: 15px;
+}
+
+#userInput::placeholder {
+  color: #94a3b8;
+}
+
+/* ===== BUTTONS ===== */
+button {
+  border: none;
+  outline: none;
+  padding: 10px 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  background: #22c55e;
+  color: #022c22;
+  transition: transform 0.1s ease, background 0.2s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+button.secondary {
+  background: #334155;
+  color: #e5e7eb;
+}
+
+/* ===== SCROLLBAR ===== */
+#chat::-webkit-scrollbar {
+  width: 5px;
+}
+#chat::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 10px;
+}
+
 /* ===== TYPING INDICATOR ===== */
 .typing {
   margin-bottom: 10px;
@@ -78,5 +184,16 @@
   }
   100% {
     opacity: 0.2;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
